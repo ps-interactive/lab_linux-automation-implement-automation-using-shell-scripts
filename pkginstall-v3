@@ -1,0 +1,41 @@
+#!/bin/bash
+source /etc/os-release
+echo "This is a $ID System"
+
+# Initialize a new and emtpy variable
+# This will be used to house package names once names have been validated
+valid_packages=""
+
+if [ "$#" -lt 1 ]; then
+  echo "At least one package name is required."
+  exit 1
+fi
+
+for package_name in "$@" ; do
+  if apt-cache search "^$package_name$" | grep -q "$package_name"; then
+    # Append the current package and a space to create a list of valid packages
+    valid_packages+="$package_name "
+  else
+    echo "The package $package_name is not available."
+    continue
+  fi
+done
+
+# Include the test -n to check that valid_packages has at least one character.
+# In simple terms at least one valid package had been added
+if [ "$ID" = 'ubuntu' ] && [ -n "$valid_packages" ]; then
+    pkgcache_file="/var/cache/apt/pkgcache.bin"
+    current_time=$(date +%s)
+    updated_time=$(stat -c%Y "$pkgcache_file")
+    time_diff=$((current_time - updated_time))
+    #The threshold is set to one day or 86400 seconds
+    threshold=86400
+    if [ "$time_diff" -le "$threshold" ]; then
+       echo "Package cache has been updated in the last 24 hours."
+       echo "Running the command sudo apt install -y $valid_packages"
+    else
+       echo "Package cache has not been updated in the last 24 hours."
+       echo "Running the command sudo apt update"
+       echo "Running the command sudo apt install -y $valid_packages"
+    fi
+fi
