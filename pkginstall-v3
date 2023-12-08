@@ -2,7 +2,7 @@
 source /etc/os-release
 echo "This is a $ID System"
 
-# Initialize a new and emtpy variable
+# Initialize a new and empty variable
 # This will be used to house package names once names have been validated
 valid_packages=""
 
