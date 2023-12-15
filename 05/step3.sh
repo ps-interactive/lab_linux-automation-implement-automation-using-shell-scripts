@@ -5,7 +5,7 @@ if [ "$#" -lt 1 ]; then
   exit 1
 fi
 
-for package_name in "$@"
+for package_name in "$@" ; do
   if ! apt-cache search "^$package_name$" | grep -q "$package_name"; then
     echo "The package $package_name is not available."
     exit 2
