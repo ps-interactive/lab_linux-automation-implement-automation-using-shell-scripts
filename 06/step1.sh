@@ -10,7 +10,6 @@ fi
 
 for package_name in "$@" ; do
   if ! apt-cache search "^$package_name$" | grep -q "$package_name"; then
-    valid-package
     echo "The package $package_name is not available."
     continue
   fi
